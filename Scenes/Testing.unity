@@ -683,6 +683,9 @@ MonoBehaviour:
   health: 10
   speed: 9
   jumpForce: 11
+  GroundLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &1309907511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1332,7 +1335,7 @@ GameObject:
   - component: {fileID: 2128379478}
   - component: {fileID: 2128379477}
   - component: {fileID: 2128379479}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: backgroundColorGrass
   m_TagString: Ground
   m_Icon: {fileID: 0}

@@ -11,6 +11,9 @@ public class Character : MonoBehaviour
 
     private bool _grounded;
 
+    [SerializeField]
+    private LayerMask GroundLayer;
+
     private void Start()
     {
         _grounded = true;
@@ -44,11 +47,11 @@ public class Character : MonoBehaviour
 
     public void Jump()
     {
-        if (_grounded)
-        {
-            _grounded = false;
-            _body.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-        }
+            if (_grounded)
+            {
+                _grounded = false;
+                _body.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            }
     }
 
     private void Die()
