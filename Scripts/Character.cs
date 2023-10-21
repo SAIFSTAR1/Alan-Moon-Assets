@@ -8,25 +8,35 @@ public class Character : MonoBehaviour
     [SerializeField]
     private float speed, jumpForce;
     private Rigidbody2D _body;
-
     private bool _grounded;
+    private float _direction;
 
     [SerializeField]
     private LayerMask GroundLayer;
 
-    private void Start()
+    protected Rigidbody2D Body
     {
-        _grounded = true;
-        _body = GetComponent<Rigidbody2D>();
-    }
-    private void Update()
-    {
-        Die();
+        get { return _body; }
     }
 
-    public void Move(float x)
+    protected float Direction
     {
-        transform.position += speed * Time.deltaTime * new Vector3(x, 0, 0);
+        get { return _direction; }
+    }
+
+    protected void Define()
+    {
+        _body = GetComponent<Rigidbody2D>();
+    }
+    
+    protected void Move(float x)
+    {
+        var v = speed;
+        if (!_grounded)
+            v /= 1.6f;
+        _body.velocity = new Vector2(x * v, _body.velocity.y);
+
+        _direction = x;
     }
 
     public void Test()
@@ -45,7 +55,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void Jump()
+    protected void Jump()
     {
             if (_grounded)
             {

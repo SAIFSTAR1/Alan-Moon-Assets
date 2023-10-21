@@ -1,37 +1,44 @@
+using System;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : Character
 {
 
-    private Character _character;
     [SerializeField] private GameObject weapon;
-    
+
     private void Start()
     {
-        _character = GetComponent<Character>();
+        Define();
     }
-
     
-private void FixedUpdate() {
+
+    private void FixedUpdate() {
         Controls();
     }
 
     private void Controls()
     {
-        Move();
-        WeaponControl();
+        if (Input.GetAxisRaw("Horizontal") != 0)
+        {
+            Move(Input.GetAxisRaw("Horizontal"));
+        }
         
         if (Input.GetButtonDown("Jump"))
         {
-            _character.Jump();
+            Jump();
         }
 
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Dash(Direction);
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            weapon.GetComponent<Rifle>().Shoot();
+        }
         
-    }
-    
-    private void Move()
-    {
-        _character.Move(Input.GetAxisRaw("Horizontal"));
+        WeaponControl();
     }
     
     // Similarity Theorem
@@ -53,6 +60,9 @@ private void FixedUpdate() {
         weapon.transform.position = weaponPos;
 
     }
-    
-    
+
+    private void Dash(float x)
+    {
+        Body.AddForce(16f * new Vector2(x, 0), ForceMode2D.Impulse);
+    }
 }

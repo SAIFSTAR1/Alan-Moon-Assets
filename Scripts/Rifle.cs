@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Rifle : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private int ammo;
+
+    public int Ammo
     {
-        
+        set { ammo = value; }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Shoot()
     {
-        
+        if (ammo > 0)
+        {
+            Instantiate(bullet, transform);
+            ammo--;
+        }
     }
 }
