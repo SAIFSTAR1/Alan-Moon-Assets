@@ -1,36 +1,78 @@
 using System;
 using UnityEngine;
 
-public class Player : Character
+public class Player : MonoBehaviour
 {
 
-    [SerializeField] private GameObject weapon;
+    public float Maxspeed;
+    public float Acceleration;
+    public float Decceleration;
+    public float VelPower;
+    public float FrictionAmount;
+
+    public float jumpForce;
+    public float JumpCoyoteTime;
+    public float JumpBufferTime;
+
+    private float MoveInput;
+
+    public Rigidbody2D PlayerRB;
+
+    public Transform GroundCheckPoint;
+    public Vector2 GroundCheckRaduis;
+    public LayerMask GroundLayer;
+
+    private float LastOnGroundTime;
+    private float LastJumpTime;
+    private bool Isgrounded;
+    private bool isJumping;
+    private bool CanJump;
+    private bool TryingToJump;
+    private bool JumpInputReleased;
+    
+
+    [SerializeField] 
+    private GameObject weapon;
 
     private void Start()
     {
-        Define();
+        PlayerRB = gameObject.GetComponent<Rigidbody2D>();
     }
-    
+
+    private void Update()
+    {
+        if (Physics2D.OverlapBox(GroundCheckPoint.position, GroundCheckRaduis, 0, GroundLayer))
+        {
+            LastOnGroundTime = JumpCoyoteTime;
+        }
+
+        Controls();
+        Timers();
+    }
+
+    private void Timers()
+    {
+        LastOnGroundTime -= Time.deltaTime;
+        LastJumpTime -= Time.deltaTime;
+    }
 
     private void FixedUpdate() {
-        Controls();
+        Movement();
+        Jump();
     }
 
     private void Controls()
     {
-        if (Input.GetAxisRaw("Horizontal") != 0)
-        {
-            Move(Input.GetAxisRaw("Horizontal"));
-        }
-        
+        MoveInput = Input.GetAxisRaw("Horizontal");
+   
         if (Input.GetButtonDown("Jump"))
         {
-            Jump();
+            LastJumpTime = JumpBufferTime;
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            Dash(Direction);
+            Dash(MoveInput);
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -61,8 +103,53 @@ public class Player : Character
 
     }
 
+
+    private void Movement()
+    {
+        float TargetSpeed = MoveInput * Maxspeed;
+        float SpeedDif = TargetSpeed - PlayerRB.velocity.x;
+        float AccelRate = (Mathf.Abs(TargetSpeed) > 0.01f) ? Acceleration : Decceleration;
+        float movement = Mathf.Pow(Mathf.Abs(SpeedDif) * AccelRate, VelPower) * Mathf.Sign(SpeedDif);
+
+        PlayerRB.AddForce(movement * Vector2.right);
+
+        #region Friction
+        if(LastOnGroundTime > 0 && Mathf.Abs(MoveInput) < 0.01f)
+        {
+            float amount = Mathf.Min(Mathf.Abs(PlayerRB.velocity.x), Mathf.Abs(FrictionAmount));
+            amount *= Mathf.Sign(PlayerRB.velocity.x);
+            PlayerRB.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
+        }
+        #endregion
+
+    }
+
+    private void Jump()
+    {
+        if (LastOnGroundTime > 0 && LastJumpTime > 0)
+        {
+            PlayerRB.velocity = new Vector2(PlayerRB.velocity.x, 0);
+            PlayerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            LastOnGroundTime = 0;
+            LastJumpTime = 0;
+            isJumping = true;
+            JumpInputReleased = false;
+        }
+
+    }
+
+
+
+
     private void Dash(float x)
     {
-        Body.AddForce(16f * new Vector2(x, 0), ForceMode2D.Impulse);
+        PlayerRB.AddForce(20f * new Vector2(x, 0), ForceMode2D.Impulse);
+    }
+
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(GroundCheckPoint.position, GroundCheckRaduis);
     }
 }
