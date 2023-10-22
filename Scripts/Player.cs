@@ -3,16 +3,21 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    [Header ("Movement")]
     public float Maxspeed;
     public float Acceleration;
     public float Decceleration;
     public float VelPower;
     public float FrictionAmount;
-
+    [Header("Jumping")]
     public float jumpForce;
+    public float JumpCutMultiplier;
     public float JumpCoyoteTime;
     public float JumpBufferTime;
+    [Header("Gravity")]
+    public float GravityScale;
+    public float FallGravityMultiplier;
+    public float MaxFallSpeed;
 
     private float MoveInput;
 
@@ -41,13 +46,28 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Physics2D.OverlapBox(GroundCheckPoint.position, GroundCheckRaduis, 0, GroundLayer))
+        if (Physics2D.OverlapBox(GroundCheckPoint.position, GroundCheckRaduis, 0, GroundLayer) && PlayerRB.velocity.y <= 0)
         {
             LastOnGroundTime = JumpCoyoteTime;
         }
 
         Controls();
         Timers();
+        Gravity();
+    }
+
+    private void Gravity()
+    {
+        if (PlayerRB.velocity.y < 0)
+        {
+            PlayerRB.gravityScale = GravityScale * FallGravityMultiplier;
+
+            PlayerRB.velocity = new Vector2(PlayerRB.velocity.x, Mathf.Max(PlayerRB.velocity.y, -MaxFallSpeed));
+        }
+        else
+        {
+            PlayerRB.gravityScale = GravityScale;
+        }
     }
 
     private void Timers()
@@ -68,6 +88,11 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             LastJumpTime = JumpBufferTime;
+        }
+
+        if (Input.GetButtonUp("Jump"))
+        {
+            OnJumpUp();
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
@@ -136,6 +161,17 @@ public class Player : MonoBehaviour
             JumpInputReleased = false;
         }
 
+    }
+
+    private void OnJumpUp()
+    {
+        if (PlayerRB.velocity.y > 0)
+        {
+            PlayerRB.AddForce(Vector2.down * PlayerRB.velocity.y * (1 - JumpCutMultiplier), ForceMode2D.Impulse);
+        }
+
+        JumpInputReleased = true;
+        LastJumpTime = 0;
     }
 
 
