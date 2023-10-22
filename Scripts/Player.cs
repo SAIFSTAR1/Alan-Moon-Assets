@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public float FrictionAmount;
     [Header("Jumping")]
     public float jumpForce;
+    [Range(0,1)]
     public float JumpCutMultiplier;
     public float JumpCoyoteTime;
     public float JumpBufferTime;
