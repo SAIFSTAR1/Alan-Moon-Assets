@@ -23,6 +23,7 @@ public class Character : MonoBehaviour
     protected void Move(float direction)
     {
         _body.velocity = new Vector2(direction * speed, _body.velocity.y);
+        _direction = direction;
     }
     protected void Jump()
     {
