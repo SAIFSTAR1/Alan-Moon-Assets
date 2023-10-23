@@ -35,13 +35,15 @@ public class Player : MonoBehaviour
     private bool CanJump;
     private bool TryingToJump;
     private bool JumpInputReleased;
-    
+
+    private Camera _cam; 
 
     [SerializeField] 
     private GameObject weapon;
 
     private void Start()
     {
+        _cam = Camera.main;
         PlayerRB = gameObject.GetComponent<Rigidbody2D>();
     }
 
@@ -103,32 +105,16 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            weapon.GetComponent<Rifle>().Shoot();
+            Debug.Log("Attack");
         }
         
         WeaponControl();
     }
-    
-    // Similarity Theorem
+
     private void WeaponControl()
     {
-        Vector2 pos = transform.position;
-        Vector2 weaponPos = weapon.transform.position;
-        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        
-        Vector2 V, v; // Vectors of x and y diff.s
-        float D, d; // Distances
-        V = mouse - pos;
-        v = weaponPos - pos;
-        D = Vector2.Distance(mouse, pos);
-        d = Vector2.Distance(weaponPos, pos);
-
-        weaponPos = new Vector2(V.x * d / D, V.y * d / D) + pos;
-
-        weapon.transform.position = weaponPos;
-
+        Utilities.RotateObject(transform.position, _cam.ScreenToWorldPoint(Input.mousePosition), ref weapon);
     }
-
 
     private void Movement()
     {
@@ -174,10 +160,7 @@ public class Player : MonoBehaviour
         JumpInputReleased = true;
         LastJumpTime = 0;
     }
-
-
-
-
+    
     private void Dash(float x)
     {
         PlayerRB.AddForce(20f * new Vector2(x, 0), ForceMode2D.Impulse);

@@ -33,6 +33,8 @@ public class Character : MonoBehaviour
         }
     }
 
+    public virtual void WeaponControl(){}
+
     public void Damage(float damage)
     {
         health -= damage;
@@ -43,4 +45,6 @@ public class Character : MonoBehaviour
         if (health <= 0)
             Destroy(gameObject);
     }
+    
+    
 }
