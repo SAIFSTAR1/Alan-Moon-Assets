@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,15 @@ public class CameraSettings : MonoBehaviour
     
     void Start()
     {
-        _player = GameObject.FindWithTag(PlayerTag);
+        try
+        {
+            _player = GameObject.FindWithTag(PlayerTag);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            throw;
+        }
     }
 
     void Update()
@@ -20,8 +29,10 @@ public class CameraSettings : MonoBehaviour
 
     void CameraFollow()
     {
-        Vector3 playerPos = _player.transform.position;
-        transform.position = new Vector3(playerPos.x, playerPos.y, transform.position.z);
-        
+        if (_player)
+        {
+            Vector3 playerPos = _player.transform.position;
+            transform.position = new Vector3(playerPos.x, playerPos.y, transform.position.z);
+        }
     }
 }

@@ -9,10 +9,9 @@ public class Character : MonoBehaviour
     private float speed, jumpForce;
     public Rigidbody2D _body;
     private bool _grounded;
-    public float _direction;
+    public int _direction;
 
-    [SerializeField]
-    private LayerMask GroundLayer;
+    [SerializeField] protected LayerMask groundLayer;
 
 
     protected void Define()
@@ -20,18 +19,23 @@ public class Character : MonoBehaviour
         _body = GetComponent<Rigidbody2D>();
     }
     
-    protected void Move(float direction)
+    protected void Move(int direction)
     {
         _body.velocity = new Vector2(direction * speed, _body.velocity.y);
         _direction = direction;
     }
     protected void Jump()
     {
-            if (_grounded)
-            {
-                _grounded = false;
-                _body.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            }
+        if (_grounded)
+        {
+            _grounded = false;
+            _body.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+        }
+    }
+
+    public void Damage(float damage)
+    {
+        health -= damage;
     }
 
     private void Die()

@@ -5,18 +5,33 @@ public class EnemyBase : Character
 {
 
     private bool _attack, _atTheEdge;
-    [SerializeField] private float attackRange, chaseRange;
+    [SerializeField] private float attackRange, chaseRange, maxFallHeight;
     private Transform _player;
     private float _playerDistance;
     private float _edgeDistance;
 
-    [SerializeField] private Transform edgeCheck;
+    [SerializeField] private Transform rFoot, lFoot;
+
+    public bool attack
+    {
+        get { return _attack; }
+    }
     
     private void Start()
     {
         Define();
         _atTheEdge = false;
-        _player = GameObject.FindWithTag("Player").transform;
+
+        try
+        {
+            _player = GameObject.FindWithTag("Player").transform;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            throw;
+        }
+        
     }
 
     private void FixedUpdate()
@@ -42,23 +57,34 @@ public class EnemyBase : Character
 
     private void FollowPlayer()
     {
-        if ( _playerDistance <= chaseRange && _playerDistance >= attackRange )
-            if (transform.position.x <= _player.position.x)
-                Move(1);
-            else
-                Move(-1);
+        if (_player)
+            if ( _playerDistance <= chaseRange && _playerDistance >= attackRange )
+                if (transform.position.x <= _player.position.x)
+                    Move(1);
+                else
+                    Move(-1);
             
     }
 
     private void CheckEdges()
     {
-        var hit = Physics2D.Raycast(edgeCheck.position, new Vector2(_direction, 0));
-        Debug.DrawRay(edgeCheck.position, new Vector2(_direction, 0) * hit.distance, Color.red);
+        
+        RaycastHit2D hit;
+        Vector2 origin, direction = new Vector2(0, -1);
+            
+        if (_direction == 1)
+            origin = rFoot.position;
+        else
+            origin = lFoot.position;
+        
+        hit = Physics2D.Raycast(origin, direction, groundLayer);
+        Debug.DrawRay(origin, direction * hit.distance, Color.red);
 
-        if (hit.distance <= 1f)
+        if (hit.distance > maxFallHeight || !hit)
             _atTheEdge = true;
         else
             _atTheEdge = false;
+
     }
 
     private void ChangeDirection()
@@ -71,6 +97,4 @@ public class EnemyBase : Character
                 _direction = -1;
         }
     }
-    
-    
 }
