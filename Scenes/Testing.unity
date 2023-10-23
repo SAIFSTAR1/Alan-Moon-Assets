@@ -1590,16 +1590,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Maxspeed: 9
-  Acceleration: 13
-  Decceleration: 16
-  VelPower: 0.96
-  FrictionAmount: 0.22
+  Acceleration: 9
+  Decceleration: 9
+  VelPower: 1.2
+  FrictionAmount: 0.2
   jumpForce: 12
-  JumpCoyoteTime: 0.2
-  JumpBufferTime: 0.2
-  PlayerRB: {fileID: 0}
+  JumpCutMultiplier: 0.1
+  JumpCoyoteTime: 0.15
+  JumpBufferTime: 0.1
+  GravityScale: 1.1
+  FallGravityMultiplier: 1.9
+  MaxFallSpeed: 10
+  PlayerRB: {fileID: 1309907514}
   GroundCheckPoint: {fileID: 1384784411}
-  GroundCheckRaduis: {x: 0.5, y: 0.2}
+  GroundCheckRaduis: {x: 0.4, y: 0.1}
   GroundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -1741,7 +1745,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.0029814949, g: 0.6320754, b: 0.6190874, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1776,7 +1780,7 @@ Transform:
   m_GameObject: {fileID: 1384784410}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.57, z: 0}
+  m_LocalPosition: {x: 0, y: -0.496, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
