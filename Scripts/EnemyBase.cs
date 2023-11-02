@@ -1,30 +1,32 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EnemyBase : Character
 {
-
-    private bool _attack, _atTheEdge;
-    [SerializeField] private float attackRange, chaseRange, maxFallHeight;
-    private Transform _player;
-    private float _playerDistance;
+    
+    protected bool CanAttack, Attacking, AtTheEdge;
+    [SerializeField] protected float attackRange, chaseRange, stopRange, decelerationPoint;
+    protected Transform Player;
+    protected float PlayerDistance;
     private float _edgeDistance;
 
-    [SerializeField] private Transform rFoot, lFoot;
-
-    public bool attack
+    [SerializeField] private Transform edgeCheck;
+    [SerializeField] protected LayerMask playerLayer;
+    private static class AnimationStates
     {
-        get { return _attack; }
+        public static readonly string
+            Attack = "Attack";
     }
     
-    private void Start()
+    protected void EnemyBaseStart()
     {
-        Define();
-        _atTheEdge = false;
+        CharacterStart();
+        AtTheEdge = false;
 
         try
         {
-            _player = GameObject.FindWithTag("Player").transform;
+            Player = GameObject.FindWithTag("Player").transform;
         }
         catch (Exception e)
         {
@@ -34,67 +36,96 @@ public class EnemyBase : Character
         
     }
 
-    private void FixedUpdate()
+    protected void EnemyBaseUpdate()
     {
         
-        _playerDistance = Vector3.Distance(transform.position, _player.position);
-        
+    }
+    
+    protected void EnemyBaseFixedUpdate()
+    {
+        AnimatorController();
+        CharacterFixedUpdate();
+        PlayerDistance = Vector3.Distance(transform.position, Player.position);
         ChangeDirection();
-        
-        if (!_atTheEdge)
-            FollowPlayer();
+        FollowPlayer();
         CheckEdges();
     }
 
-    protected void Attack()
+    protected virtual void SetAttackState(Vector2 direction)
     {
-        if ( _playerDistance <= attackRange )
-            _attack = true;
+        var origin = transform.position;
+        bool hit = Physics2D.OverlapCircle(origin, attackRange, playerLayer);
+
+        if (hit)
+        {
+            CanAttack = true;
+        }
         else
-            _attack = false;
+            CanAttack = false;
         
     }
-
-    private void FollowPlayer()
+    
+    private void OnDrawGizmosSelected()
     {
-        if (_player)
-            if ( _playerDistance <= chaseRange && _playerDistance >= attackRange )
-                if (transform.position.x <= _player.position.x)
-                    Move(1);
-                else
-                    Move(-1);
-            
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
+    protected virtual void FollowPlayer()
+    {
+        Moving = false;
+        
+        if (!Player) return;
+        if (!(PlayerDistance <= chaseRange)) return;
+        if (!(PlayerDistance >= stopRange)) return;
+        if (AtTheEdge) return;
+
+        Moving = true;
+        var diff = transform.position.x - Player.position.x;
+        if (Math.Abs(diff) <= decelerationPoint)
+        {
+            if (diff < 0)
+                Move(1, 0.1f);
+            else
+                Move(-1, 0.1f);
+            return;
+        }
+        if (transform.position.x <= Player.position.x)
+            Move(1);
+        else
+            Move(-1);
     }
 
     private void CheckEdges()
     {
         
         RaycastHit2D hit;
-        Vector2 origin, direction = new Vector2(0, -1);
-            
-        if (_direction == 1)
-            origin = rFoot.position;
-        else
-            origin = lFoot.position;
+        Vector2 origin = edgeCheck.position, direction = new Vector2(0, -1);
         
-        hit = Physics2D.Raycast(origin, direction, groundLayer);
+        hit = Physics2D.Raycast(origin, direction, Mathf.Infinity, groundLayer);
         Debug.DrawRay(origin, direction * hit.distance, Color.red);
 
         if (hit.distance > maxFallHeight || !hit)
-            _atTheEdge = true;
+            AtTheEdge = true;
         else
-            _atTheEdge = false;
+            AtTheEdge = false;
 
     }
 
-    private void ChangeDirection()
+    protected virtual void ChangeDirection()
     {
-        if (_playerDistance <= chaseRange)
-        {
-            if (transform.position.x <= _player.position.x)
-                _direction = 1;
-            else
-                _direction = -1;
-        }
+        if (!(PlayerDistance <= chaseRange)) return;
+        
+        if (transform.position.x <= Player.position.x)
+            _direction = 1;
+        else if (transform.position.x > Player.position.x)
+            _direction = -1;
+        
     }
+
+    private void AnimatorController()
+    {
+        if (Attacking)
+            TriggerAnimation(AnimationStates.Attack);
+    }
+    
 }

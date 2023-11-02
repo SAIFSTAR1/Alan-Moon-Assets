@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Rifle : Weapon
+public class Rifle : MonoBehaviour
 {
     [SerializeField] private GameObject bullet;
     [SerializeField] private int ammo;
@@ -15,10 +15,9 @@ public class Rifle : Weapon
 
     public void Shoot()
     {
-        if (ammo > 0)
-        {
-            Instantiate(bullet, transform);
-            ammo--;
-        }
+        if (ammo <= 0) return;
+        
+        Instantiate(bullet, transform);
+        ammo--;
     }
 }
