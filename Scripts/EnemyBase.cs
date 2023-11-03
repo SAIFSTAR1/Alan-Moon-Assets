@@ -58,10 +58,14 @@ public class EnemyBase : Character
 
         if (hit)
         {
+            Debug.Log("Detected");
             CanAttack = true;
         }
         else
+        {
             CanAttack = false;
+            Debug.Log("Not Detected");
+        }
         
     }
     

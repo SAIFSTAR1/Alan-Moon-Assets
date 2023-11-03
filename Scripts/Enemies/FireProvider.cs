@@ -27,6 +27,7 @@ namespace Enemies
         private void Update()
         {
             ShooterEnemyUpdate();
+            SetAttackState(new Vector2(_direction, 0));
             WeaponControl();
         }
 

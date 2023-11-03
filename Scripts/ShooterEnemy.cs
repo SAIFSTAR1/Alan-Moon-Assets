@@ -28,7 +28,7 @@ public class ShooterEnemy : EnemyBase
     {
         Attacking = false;
         if (!CanAttack) return;
-
+        
         if (_nextFire <= 0)
         {
             Attacking = true;
