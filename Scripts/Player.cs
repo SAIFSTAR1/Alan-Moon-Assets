@@ -165,6 +165,11 @@ public class Player : MonoBehaviour
     {
         PlayerRB.AddForce(20f * new Vector2(x, 0), ForceMode2D.Impulse);
     }
+    
+    void DamagePlayer(int DamageAmount)
+    {
+        gameObject.GetComponent<PlayerHealth>().Damage(DamageAmount);
+    }
 
 
     void OnDrawGizmos()
