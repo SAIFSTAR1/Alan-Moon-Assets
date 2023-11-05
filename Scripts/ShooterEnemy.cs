@@ -2,7 +2,7 @@
 
 public class ShooterEnemy : EnemyBase
 {
-    [SerializeField] private GameObject weapon;
+    [SerializeField] protected GameObject weapon;
     private Rifle _rifle;
     [SerializeField] private float fireRate;
     private float _nextFire;
@@ -32,7 +32,7 @@ public class ShooterEnemy : EnemyBase
         if (_nextFire <= 0)
         {
             Attacking = true;
-            _rifle.Shoot();
+            _rifle.Invoke("Shoot", 0.52f);
             _nextFire = fireRate;
         }
         else

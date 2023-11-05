@@ -54,8 +54,7 @@ public class Character : MonoBehaviour
     
     protected void Move(int direction, float factor = 1)
     {
-        Body.velocity = new Vector2(direction * speed, Body.velocity.y * factor);
-        _direction = direction;
+        Body.velocity = new Vector2(direction * speed, Body.velocity.y * factor); _direction = direction;
         Moving = true;
     }
     protected void Jump()

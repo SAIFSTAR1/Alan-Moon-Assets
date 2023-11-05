@@ -21,6 +21,7 @@ namespace Enemies
         private void FixedUpdate()
         {
             MSFixedUpdate();
+            AnimatorController();
             FlyToPlayer();
         }
         
@@ -29,7 +30,7 @@ namespace Enemies
             var direction = 0;
             _flying = false;
 
-            if (Player.position.y - transform.position.y >= 1f)
+            if (Player.position.y - transform.position.y >= 0.4f)
                 direction = 1;
             else if (Player.position.y - transform.position.y < -3f)
                 direction = -1;

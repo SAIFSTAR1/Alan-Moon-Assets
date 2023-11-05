@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
     private bool CanJump;
     private bool TryingToJump;
     private bool JumpInputReleased;
+    [HideInInspector] public float direction;
 
     private Camera _cam; 
 
@@ -53,7 +54,8 @@ public class Player : MonoBehaviour
         {
             LastOnGroundTime = JumpCoyoteTime;
         }
-
+        direction = MoveInput;
+        
         Controls();
         Timers();
         Gravity();
@@ -176,5 +178,10 @@ public class Player : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(GroundCheckPoint.position, GroundCheckRaduis);
+    }
+
+    void Flip()
+    {
+        
     }
 }

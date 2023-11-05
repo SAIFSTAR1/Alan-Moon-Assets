@@ -83,9 +83,9 @@ public class MeleeAndShooterEnemy : EnemyBase
     private void AnimatorController()
     {
         if (_melee)
-            Animator.SetTrigger(AnimationStates.Melee);
+            TriggerAnimation(AnimationStates.Melee);
         if (_fire)
-            Animator.SetTrigger(AnimationStates.Fire);
+            TriggerAnimation(AnimationStates.Fire);
     }
     
     private void OnDrawGizmosSelected()
