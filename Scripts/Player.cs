@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour
 {
@@ -31,21 +32,55 @@ public class Player : MonoBehaviour
     private float LastOnGroundTime;
     private float LastJumpTime;
     private bool Isgrounded;
-    private bool isJumping;
+    private bool isIdle;
+    private bool isJumping, isMoving, isFalling, isAttacking;
     private bool CanJump;
     private bool TryingToJump;
     private bool JumpInputReleased;
     [HideInInspector] public float direction;
 
-    private Camera _cam; 
+    private Camera _cam;
+    private Vector3 _mousePos, _reference;
 
-    [SerializeField] 
-    private GameObject weapon;
+    [SerializeField] private WeaponHolder weaponSystem;
+    public Animator animator;
+    [HideInInspector]
+    public string CurrentState;
+
+    private static class AnimationStates
+    {
+        public static string
+            Idle = "Idle",
+            Walk = "Walk",
+            Jump = "Jump",
+            Fall = "Fall",
+            Attack = "Attack";
+            
+    }
+
+    private void PlayAnimationState(string state)
+    {
+        if (state == CurrentState) return;
+        animator.Play(state);
+        CurrentState = state;
+    }
 
     private void Start()
     {
         _cam = Camera.main;
-        PlayerRB = gameObject.GetComponent<Rigidbody2D>();
+        PlayerRB = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+    }
+    
+    private void FixedUpdate()
+    {
+        IdleCheck();
+        GroundCheck();
+        AnimatorController();
+        Movement();
+        CheckMovement();
+        Jump();
+        FallingPhases();
     }
 
     private void Update()
@@ -54,11 +89,21 @@ public class Player : MonoBehaviour
         {
             LastOnGroundTime = JumpCoyoteTime;
         }
-        direction = MoveInput;
+        if (MoveInput != 0)
+            direction = MoveInput;
         
         Controls();
         Timers();
         Gravity();
+        Flip();
+    }
+
+    private void CheckMovement()
+    {
+        if (MoveInput != 0)
+            isMoving = true;
+        else
+            isMoving = false;
     }
 
     private void Gravity()
@@ -66,12 +111,13 @@ public class Player : MonoBehaviour
         if (PlayerRB.velocity.y < 0)
         {
             PlayerRB.gravityScale = GravityScale * FallGravityMultiplier;
-
+            isFalling = true;
             PlayerRB.velocity = new Vector2(PlayerRB.velocity.x, Mathf.Max(PlayerRB.velocity.y, -MaxFallSpeed));
         }
         else
         {
             PlayerRB.gravityScale = GravityScale;
+            isFalling = false;
         }
     }
 
@@ -80,12 +126,7 @@ public class Player : MonoBehaviour
         LastOnGroundTime -= Time.deltaTime;
         LastJumpTime -= Time.deltaTime;
     }
-
-    private void FixedUpdate() {
-        Movement();
-        Jump();
-    }
-
+    
     private void Controls()
     {
         MoveInput = Input.GetAxisRaw("Horizontal");
@@ -105,26 +146,18 @@ public class Player : MonoBehaviour
             Dash(MoveInput);
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Attack");
+            Attack();
         }
-        
-        WeaponControl();
-    }
-
-    private void WeaponControl()
-    {
-        Utilities.RotateObject(transform.position, _cam.ScreenToWorldPoint(Input.mousePosition), ref weapon);
     }
 
     private void Movement()
     {
-        float TargetSpeed = MoveInput * Maxspeed;
-        float SpeedDif = TargetSpeed - PlayerRB.velocity.x;
-        float AccelRate = (Mathf.Abs(TargetSpeed) > 0.01f) ? Acceleration : Decceleration;
-        float movement = Mathf.Pow(Mathf.Abs(SpeedDif) * AccelRate, VelPower) * Mathf.Sign(SpeedDif);
-
+        var TargetSpeed = MoveInput * Maxspeed;
+        var SpeedDif = TargetSpeed - PlayerRB.velocity.x;
+        var AccelRate = (Mathf.Abs(TargetSpeed) > 0.01f) ? Acceleration : Decceleration;
+        var movement = Mathf.Pow(Mathf.Abs(SpeedDif) * AccelRate, VelPower) * Mathf.Sign(SpeedDif);
         PlayerRB.AddForce(movement * Vector2.right);
 
         #region Friction
@@ -135,7 +168,6 @@ public class Player : MonoBehaviour
             PlayerRB.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
         }
         #endregion
-
     }
 
     private void Jump()
@@ -151,14 +183,14 @@ public class Player : MonoBehaviour
         }
 
     }
-
+    
     private void OnJumpUp()
     {
         if (PlayerRB.velocity.y > 0)
         {
             PlayerRB.AddForce(Vector2.down * PlayerRB.velocity.y * (1 - JumpCutMultiplier), ForceMode2D.Impulse);
         }
-
+        
         JumpInputReleased = true;
         LastJumpTime = 0;
     }
@@ -168,20 +200,93 @@ public class Player : MonoBehaviour
         PlayerRB.AddForce(20f * new Vector2(x, 0), ForceMode2D.Impulse);
     }
     
-    void DamagePlayer(int DamageAmount)
+    public void DamagePlayer(int damageAmount)
     {
-        gameObject.GetComponent<PlayerHealth>().Damage(DamageAmount);
+        gameObject.GetComponent<PlayerHealth>().Damage(damageAmount);
     }
-
-
-    void OnDrawGizmos()
+    
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(GroundCheckPoint.position, GroundCheckRaduis);
     }
 
-    void Flip()
+    private void Flip()
     {
+        Quaternion look;
+        var reset = Quaternion.Euler(0, 0,0);
+        if (direction == 1)
+            look = Quaternion.Euler(0, 0, 0);
+        else
+            look = Quaternion.Euler(0, -180, 0);
+        transform.rotation = Quaternion.Slerp(reset, look, 1f);
+    }
+
+    private void AnimatorController()
+    {
+        if (isIdle)
+            PlayAnimationState(AnimationStates.Idle);
+        if (isMoving && Isgrounded)
+            PlayAnimationState(AnimationStates.Walk);
+        if (isJumping)
+            PlayAnimationState(AnimationStates.Jump);
+        if (isAttacking && !isMoving)
+            PlayAnimationState(AnimationStates.Attack);
         
+        animator.SetBool(AnimationStates.Attack, isAttacking);
+    }
+
+    private void FallingPhases()
+    {
+        if (!isFalling) return;
+        isJumping = false;
+        var origin = transform.position;
+        var dir = new Vector2(0, -1);
+        var hit = Physics2D.Raycast(origin, dir, Mathf.Infinity, GroundLayer);
+
+        if (hit.distance > 1f)
+        {
+            PlayAnimationState(AnimationStates.Fall);
+        }
+        else if (hit.distance <= 1f)
+        {
+            animator.SetInteger("Fall", 1);
+        }
+    }
+
+    private void IdleCheck()
+    {
+        isIdle = false;
+        if (isMoving) return;
+        if (isJumping) return;
+        if (isFalling) return;
+        if (isAttacking) return;
+        isIdle = true;
+    }
+
+    private void GroundCheck()
+    {
+        var hit = Physics2D.Raycast(GroundCheckPoint.position, new Vector2(0, -1),GroundLayer);
+        Debug.DrawRay(GroundCheckPoint.position, new Vector2(0, -1) * hit.distance, Color.magenta);
+
+        if (hit.distance < 0.01f)
+            Isgrounded = true;
+        else
+            Isgrounded = false;
+    }
+
+    private void Attack()
+    {
+        isAttacking = true;
+    }
+
+    private void DamageAttack()
+    {
+        weaponSystem.currentWeapon.Attack(direction);
+    }
+
+    public void StopAttack()
+    {
+        isAttacking = false;
     }
 }

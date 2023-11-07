@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 8647651640958814514}
   - component: {fileID: 1332978867216206293}
   - component: {fileID: 4615924570474237258}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: DroneEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -259,6 +259,7 @@ MonoBehaviour:
   attackRange: 4
   chaseRange: 20
   stopRange: 4
+  decelerationPoint: 0
   edgeCheck: {fileID: 8057826238179840651}
   playerLayer:
     serializedVersion: 2

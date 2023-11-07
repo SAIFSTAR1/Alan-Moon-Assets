@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Character : MonoBehaviour
@@ -72,13 +73,13 @@ public class Character : MonoBehaviour
     {
         if (damage == 0) return;
         health -= damage;
-        StartCoroutine(GetHurt());
+        GetHurt();
     }
 
-    private IEnumerator GetHurt()
+    private async void GetHurt()
     {
         Hurt = true;
-        yield return new WaitForSeconds(0.4f);
+        await Task.Delay(200);
         Hurt = false;
     }
 

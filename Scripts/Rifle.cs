@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Rifle : MonoBehaviour
+public class Rifle : Weapon
 {
     [SerializeField] private GameObject bullet;
     [SerializeField] private int ammo;
