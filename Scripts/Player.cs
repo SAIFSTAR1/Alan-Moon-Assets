@@ -303,7 +303,10 @@ public class Player : MonoBehaviour
         Debug.DrawRay(GroundCheckPoint.position, new Vector2(0, -1) * hit.distance, Color.magenta);
 
         if (hit.distance < 0.01f)
+        {
             Isgrounded = true;
+            NumberOfJumps = MaxJumps;
+        }
         else
             Isgrounded = false;
     }
