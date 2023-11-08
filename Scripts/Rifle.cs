@@ -21,7 +21,7 @@ public class Rifle : Weapon
         set { ammo = value; }
     }
 
-    public void Shoot()
+    public void Attack()
     {
         if (ammo <= 0) return;
         var angle = transform.rotation.z;

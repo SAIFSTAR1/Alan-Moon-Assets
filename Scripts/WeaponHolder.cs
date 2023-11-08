@@ -26,14 +26,15 @@ public class WeaponHolder : MonoBehaviour
         SetAnimationState();
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            ChangeWeapon(0);
+            ChangeWeapon(1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            ChangeWeapon(1);
+            ChangeWeapon(2);
         }
-
+        
         currentWeapon = weapons[CurrentWeapon];
+        Debug.Log(CurrentWeapon);
     }
 
     private void ChangeWeapon(int x)

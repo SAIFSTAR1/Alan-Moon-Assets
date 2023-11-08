@@ -32,7 +32,7 @@ public class ShooterEnemy : EnemyBase
         if (_nextFire <= 0)
         {
             Attacking = true;
-            _rifle.Invoke("Shoot", 0.52f);
+            _rifle.Invoke("Attack", 0.52f);
             _nextFire = fireRate;
         }
         else

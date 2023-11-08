@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -24,6 +26,7 @@ public class Player : MonoBehaviour
     private float MoveInput;
 
     public Rigidbody2D PlayerRB;
+    private SpriteRenderer PlayerSR;
 
     public Transform GroundCheckPoint;
     public Vector2 GroundCheckRaduis;
@@ -33,13 +36,13 @@ public class Player : MonoBehaviour
     private float LastJumpTime;
     private bool Isgrounded;
     private bool isIdle;
-    private bool isJumping, isMoving, isFalling, isAttacking;
+    private bool isJumping, isMoving, isFalling, isAttacking, special;
     private bool CanJump;
+    private bool CanDoubleJump;
     private bool TryingToJump;
     private bool JumpInputReleased;
     [HideInInspector] public float direction;
 
-    private Camera _cam;
     private Vector3 _mousePos, _reference;
 
     [SerializeField] private WeaponHolder weaponSystem;
@@ -47,18 +50,22 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public string CurrentState;
 
-    private static class AnimationStates
+    [SerializeField] private Weapon specialWeapon;
+
+    public static class AnimationStates
     {
         public static string
             Idle = "Idle",
             Walk = "Walk",
             Jump = "Jump",
             Fall = "Fall",
-            Attack = "Attack";
-            
+            Attack = "Attack",
+            Die = "Die",
+            DoubleJump = "DoubleJump",
+            SpecialAttack = "SpecialAttack";
     }
 
-    private void PlayAnimationState(string state)
+    public void PlayAnimationState(string state)
     {
         if (state == CurrentState) return;
         animator.Play(state);
@@ -67,9 +74,9 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        _cam = Camera.main;
         PlayerRB = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        PlayerSR = GetComponent<SpriteRenderer>();
     }
     
     private void FixedUpdate()
@@ -79,6 +86,7 @@ public class Player : MonoBehaviour
         AnimatorController();
         Movement();
         CheckMovement();
+        SetDoubleJump();
         Jump();
         FallingPhases();
     }
@@ -133,6 +141,7 @@ public class Player : MonoBehaviour
    
         if (Input.GetButtonDown("Jump"))
         {
+            if (!Isgrounded) DoubleJump();
             LastJumpTime = JumpBufferTime;
         }
 
@@ -149,6 +158,11 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Attack();
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            SpecialAttack();
         }
     }
 
@@ -203,6 +217,7 @@ public class Player : MonoBehaviour
     public void DamagePlayer(int damageAmount)
     {
         gameObject.GetComponent<PlayerHealth>().Damage(damageAmount);
+        GetHurt();
     }
     
     private void OnDrawGizmos()
@@ -261,6 +276,7 @@ public class Player : MonoBehaviour
         if (isJumping) return;
         if (isFalling) return;
         if (isAttacking) return;
+        if (special) return;
         isIdle = true;
     }
 
@@ -288,5 +304,40 @@ public class Player : MonoBehaviour
     public void StopAttack()
     {
         isAttacking = false;
+    }
+
+    private void SpecialAttack()
+    {
+        special = true;
+        PlayAnimationState(AnimationStates.SpecialAttack);
+    }
+
+    private void SpecialDamage()
+    {
+        specialWeapon.Attack(direction);
+    }
+
+    private void StopSpecial()
+    {
+        special = false;
+    }
+
+    private void DoubleJump()
+    {
+        PlayAnimationState(AnimationStates.DoubleJump);
+        CanDoubleJump = false;
+    }
+
+    private void SetDoubleJump()
+    {
+        if (Isgrounded)
+            CanDoubleJump = true;
+    }
+
+    private async void GetHurt()
+    {
+        PlayerSR.color = Color.red;
+        await Task.Delay(500);
+        PlayerSR.color = Color.white;
     }
 }

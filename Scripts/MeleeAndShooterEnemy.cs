@@ -72,7 +72,7 @@ public class MeleeAndShooterEnemy : EnemyBase
         if (_nextFire <= 0)
         {
             Attacking = true;
-            _rifle.Shoot();
+            _rifle.Attack();
             _nextFire = fireRate;
         }
         else
