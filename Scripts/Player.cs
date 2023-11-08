@@ -299,7 +299,7 @@ public class Player : MonoBehaviour
 
     private void GroundCheck()
     {
-        var hit = Physics2D.Raycast(GroundCheckPoint.position, new Vector2(0, -1),GroundLayer);
+        var hit = Physics2D.Raycast(GroundCheckPoint.position, new Vector2(0, -1),Mathf.Infinity, GroundLayer);
         Debug.DrawRay(GroundCheckPoint.position, new Vector2(0, -1) * hit.distance, Color.magenta);
 
         if (hit.distance < 0.01f)
