@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     public float JumpCutMultiplier;
     public float JumpCoyoteTime;
     public float JumpBufferTime;
+    public float MaxJumps;
+    float NumberOfJumps;
     [Header("Gravity")]
     public float GravityScale;
     public float FallGravityMultiplier;
@@ -77,6 +79,7 @@ public class Player : MonoBehaviour
         PlayerRB = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         PlayerSR = GetComponent<SpriteRenderer>();
+        NumberOfJumps = MaxJumps;
     }
     
     private void FixedUpdate()
@@ -194,6 +197,20 @@ public class Player : MonoBehaviour
             LastJumpTime = 0;
             isJumping = true;
             JumpInputReleased = false;
+            NumberOfJumps--;
+        }
+        else
+        {
+            if(NumberOfJumps > 0 && LastJumpTime > 0)
+            {
+                PlayerRB.velocity = new Vector2(PlayerRB.velocity.x, 0);
+                PlayerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                LastOnGroundTime = 0;
+                LastJumpTime = 0;
+                isJumping = true;
+                JumpInputReleased = false;
+                NumberOfJumps--;
+            }
         }
 
     }
