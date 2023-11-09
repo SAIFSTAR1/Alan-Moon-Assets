@@ -23,7 +23,7 @@ public class WeaponHolder : MonoBehaviour
     
     private void Update()
     {
-        SetAnimationState();
+        
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeWeapon(1);
@@ -34,7 +34,7 @@ public class WeaponHolder : MonoBehaviour
         }
         
         currentWeapon = weapons[CurrentWeapon];
-        Debug.Log(CurrentWeapon);
+        SetAnimationState();
     }
 
     private void ChangeWeapon(int x)
@@ -56,7 +56,7 @@ public class WeaponHolder : MonoBehaviour
 
     private void SetAnimationState()
     {
-        _player.animator.SetInteger(WeaponSelected, CurrentWeapon);
+        _player.animator.SetTrigger(currentWeapon.Type);
     }
 
 }

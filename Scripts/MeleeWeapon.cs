@@ -1,9 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class MeleeWeapon : Weapon
 {
     [SerializeField] private float attackRange, damage, power;
     [SerializeField] private LayerMask enemyLayer;
+    private void Start()
+    {
+        if (Type == "")
+            Type = "Melee";
+    }
 
     public override void Attack(float dir)
     {

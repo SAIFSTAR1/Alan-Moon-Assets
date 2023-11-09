@@ -638,11 +638,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3957507490126103082, guid: c121e43a8667ee14f8565ada4a7ec7a0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -14.47
+      value: -31.69
       objectReference: {fileID: 0}
     - target: {fileID: 3957507490126103082, guid: c121e43a8667ee14f8565ada4a7ec7a0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.12
+      value: -0.7
       objectReference: {fileID: 0}
     - target: {fileID: 3957507490126103082, guid: c121e43a8667ee14f8565ada4a7ec7a0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1274,7 +1274,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1834447178208226629, guid: 41d6c40255981a64380b0a174c71527e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0
+      value: 2.567571
       objectReference: {fileID: 0}
     - target: {fileID: 1834447178208226629, guid: 41d6c40255981a64380b0a174c71527e, type: 3}
       propertyPath: m_LocalScale.y
@@ -1420,6 +1420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32f14d6bb6147c89268b789ab7dc3c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Type: 
   attackRange: 0.18
   damage: 2
   power: 3
@@ -1645,14 +1646,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4233368837558557518, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4233368837558557518, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4233368837558557518, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3060365
+      objectReference: {fileID: 0}
     - target: {fileID: 8070790905593594679, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8208383597163833813, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
+      propertyPath: MaxJumps
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8208383597163833813, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
       propertyPath: specialWeapon
       value: 
       objectReference: {fileID: 414866999}
+    - target: {fileID: 8757702467265786355, guid: 4a50e1e184c446149a601d93e26a2695, type: 3}
+      propertyPath: Type
+      value: Punch
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

@@ -13,6 +13,7 @@ public class Rifle : Weapon
 
     private void Start()
     {
+        Type = "Rifle";
         _holder = transform.parent.gameObject.GetComponent<Character>();
     }
     

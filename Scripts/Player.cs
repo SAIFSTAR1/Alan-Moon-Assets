@@ -40,7 +40,6 @@ public class Player : MonoBehaviour
     private bool isIdle;
     private bool isJumping, isMoving, isFalling, isAttacking, special;
     private bool CanJump;
-    private bool CanDoubleJump;
     private bool TryingToJump;
     private bool JumpInputReleased;
     [HideInInspector] public float direction;
@@ -89,7 +88,6 @@ public class Player : MonoBehaviour
         AnimatorController();
         Movement();
         CheckMovement();
-        SetDoubleJump();
         Jump();
         FallingPhases();
     }
@@ -144,7 +142,6 @@ public class Player : MonoBehaviour
    
         if (Input.GetButtonDown("Jump"))
         {
-            if (!Isgrounded) DoubleJump();
             LastJumpTime = JumpBufferTime;
         }
 
@@ -207,7 +204,7 @@ public class Player : MonoBehaviour
                 PlayerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 LastOnGroundTime = 0;
                 LastJumpTime = 0;
-                isJumping = true;
+                PlayAnimationState(AnimationStates.DoubleJump);
                 JumpInputReleased = false;
                 NumberOfJumps--;
             }
@@ -261,7 +258,10 @@ public class Player : MonoBehaviour
         if (isMoving && Isgrounded)
             PlayAnimationState(AnimationStates.Walk);
         if (isJumping)
+        {
             PlayAnimationState(AnimationStates.Jump);
+        }
+
         if (isAttacking && !isMoving)
             PlayAnimationState(AnimationStates.Attack);
         
@@ -340,18 +340,6 @@ public class Player : MonoBehaviour
     private void StopSpecial()
     {
         special = false;
-    }
-
-    private void DoubleJump()
-    {
-        PlayAnimationState(AnimationStates.DoubleJump);
-        CanDoubleJump = false;
-    }
-
-    private void SetDoubleJump()
-    {
-        if (Isgrounded)
-            CanDoubleJump = true;
     }
 
     private async void GetHurt()
